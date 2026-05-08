@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Dashboard - MediSight Health</title>
+<link rel="stylesheet" href="css/global.css"/>
+<link rel="stylesheet" href="css/login.css"/>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+  /* Dashboard Specific Styles */
+  .dashboard-layout {
+    display: flex;
+    min-height: 100vh;
+    background: var(--surface);
+    padding-top: var(--nav-height);
+  }
+  .sidebar {
+    width: 280px;
+    background: white;
+    border-right: 1px solid var(--surface-dim);
+    position: fixed;
+    top: var(--nav-height);
+    bottom: 0;
+    left: 0;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    z-index: 10;
+  }
+  .sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    color: var(--text-secondary);
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    transition: all var(--transition-base);
+  }
+  .sidebar-link:hover, .sidebar-link.active {
+    background: var(--accent-light);
+    color: var(--accent-dark);
+  }
+  .main-content {
+    flex: 1;
+    margin-left: 280px;
+    padding: 40px;
+  }
+  .dash-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-bottom: 32px;
+  }
+  .dash-card {
+    background: white;
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--surface-dim);
+  }
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+  .card-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+  }
+  .vital-val {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    font-family: var(--font-display);
+  }
+  .dash-tab {
+    display: none;
+    animation: fadeIn 0.3s;
+  }
+  .dash-tab.active {
+    display: block;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar" style="background: white; border-bottom: 1px solid var(--surface-dim); box-shadow: none;">
+  <div class="container" style="max-width: 100%; padding: 0 40px;">
+    <a href="index.html" class="nav-logo" style="color: var(--primary);">
+      <div class="logo-icon"><i data-lucide="activity" style="width:20px;height:20px;"></i></div>
+      MediSight Health
+    </a>
+    <div class="nav-actions">
+      <div style="display: flex; align-items: center; gap: 16px;">
+        <!-- Global Image Storage Button -->
+        <label for="globalFileUpload" class="btn btn-outline" style="cursor: pointer; display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 20px; font-size: 0.8rem; border-color: var(--surface-dim);">
+          <i data-lucide="camera" style="width:14px; height:14px; color: var(--accent);"></i> Store Image
+        </label>
+        <input type="file" id="globalFileUpload" accept="image/*" style="display: none;" />
+        
+        <div style="text-align: right;">
+          <div style="font-weight: 700; font-size: 0.9rem; color: var(--text-primary);">Priya S.</div>
+          <div style="font-size: 0.75rem; color: var(--text-muted);">Patient ID: 984-221</div>
+        </div>
+        <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--accent); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700;">PS</div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="dashboard-layout">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <a href="#" class="sidebar-link active" onclick="switchDashTab('overview', this)"><i data-lucide="layout-dashboard"></i> Overview</a>
+    <a href="#" class="sidebar-link" onclick="switchDashTab('reports', this)"><i data-lucide="file-text"></i> My Reports</a>
+    <a href="#" class="sidebar-link" onclick="switchDashTab('vitals', this)"><i data-lucide="activity"></i> Vitals History</a>
+    <a href="#" class="sidebar-link" onclick="switchDashTab('meds', this)"><i data-lucide="pill"></i> Medications</a>
+    <a href="#" class="sidebar-link" onclick="switchDashTab('appointments', this)"><i data-lucide="calendar"></i> Appointments</a>
+    <a href="#" class="sidebar-link" onclick="switchDashTab('expert-ai', this)" style="color: var(--accent-dark); background: rgba(0, 212, 204, 0.1);"><i data-lucide="bot"></i> Expert AI Chat</a>
+    <a href="#" class="sidebar-link" onclick="switchDashTab('insurance', this)"><i data-lucide="shield-check"></i> Health Insurance</a>
+    <div style="margin-top: auto;">
+      <a href="#" class="sidebar-link"><i data-lucide="settings"></i> Settings</a>
+      <a href="login.html" class="sidebar-link"><i data-lucide="log-out"></i> Logout</a>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    
+    <!-- OVERVIEW TAB -->
+    <div id="tab-overview" class="dash-tab active">
+      <div style="margin-bottom: 32px;">
+        <h1 style="font-size: 2.2rem; color: var(--primary);">Welcome back, Priya 👋</h1>
+        <p style="color: var(--text-secondary);">Here is your health overview for today.</p>
+      </div>
+
+      <div class="dash-grid">
+        <!-- Health Score -->
+        <div class="dash-card" style="background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: white; border: none;">
+          <div class="card-header">
+            <div class="card-title" style="color: rgba(255,255,255,0.8);">Overall Health Score</div>
+            <i data-lucide="shield-check" style="color: var(--accent);"></i>
+          </div>
+          <div style="display: flex; align-items: baseline; gap: 8px;">
+            <div class="vital-val" style="color: white; font-size: 3rem;">82</div>
+            <div style="color: rgba(255,255,255,0.6);">/ 100</div>
+          </div>
+          <div style="margin-top: 16px; font-size: 0.85rem; color: var(--success); display: flex; align-items: center; gap: 4px;">
+            <i data-lucide="trending-up" style="width: 14px; height: 14px;"></i> +4 points this month
+          </div>
+        </div>
+
+        <!-- Blood Pressure -->
+        <div class="dash-card">
+          <div class="card-header">
+            <div class="card-title">Blood Pressure</div>
+            <div style="width: 32px; height: 32px; border-radius: 8px; background: var(--success-light); color: var(--success); display: flex; align-items: center; justify-content: center;"><i data-lucide="heart-pulse" style="width: 18px; height: 18px;"></i></div>
+          </div>
+          <div class="vital-val">120/80</div>
+          <div style="margin-top: 8px; font-size: 0.85rem; color: var(--text-muted);">Normal • Taken today</div>
+        </div>
+
+        <!-- Glucose -->
+        <div class="dash-card">
+          <div class="card-header">
+            <div class="card-title">Fasting Glucose</div>
+            <div style="width: 32px; height: 32px; border-radius: 8px; background: var(--accent-light); color: var(--accent); display: flex; align-items: center; justify-content: center;"><i data-lucide="droplets" style="width: 18px; height: 18px;"></i></div>
+          </div>
+          <div class="vital-val">98 <span style="font-size: 1rem; color: var(--text-muted); font-weight: 500;">mg/dL</span></div>
+          <div style="margin-top: 8px; font-size: 0.85rem; color: var(--text-muted);">Optimal • Taken 2 days ago</div>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px;">
+        <!-- Recent Reports -->
+        <div class="dash-card">
+          <div class="card-header">
+            <div class="card-title">Recent Lab Reports</div>
+            <a href="#" style="font-size: 0.85rem; color: var(--accent); font-weight: 600;" onclick="switchDashTab('reports', document.querySelectorAll('.sidebar-link')[1])">View All</a>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 16px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; padding-bottom: 16px; border-bottom: 1px solid var(--surface-dim);">
+              <div style="display: flex; align-items: center; gap: 12px;">
+                <div style="width: 40px; height: 40px; border-radius: 8px; background: rgba(139,92,246,0.1); color: #8B5CF6; display: flex; align-items: center; justify-content: center;"><i data-lucide="flask-conical"></i></div>
+                <div>
+                  <div style="font-weight: 700; color: var(--text-primary); font-size: 0.95rem;">Complete Blood Count (CBC)</div>
+                  <div style="font-size: 0.8rem; color: var(--text-muted);">Apollo Diagnostics • Oct 24, 2025</div>
+                </div>
+              </div>
+              <button class="btn btn-outline btn-sm">Review</button>
+            </div>
+            <div style="display: flex; align-items: center; justify-content: space-between; padding-bottom: 16px; border-bottom: 1px solid var(--surface-dim);">
+              <div style="display: flex; align-items: center; gap: 12px;">
+                <div style="width: 40px; height: 40px; border-radius: 8px; background: var(--warning-light); color: var(--warning); display: flex; align-items: center; justify-content: center;"><i data-lucide="activity"></i></div>
+                <div>
+                  <div style="font-weight: 700; color: var(--text-primary); font-size: 0.95rem;">Lipid Profile</div>
+                  <div style="font-size: 0.8rem; color: var(--text-muted);">Dr. Lal PathLabs • Oct 10, 2025</div>
+                </div>
+              </div>
+              <button class="btn btn-outline btn-sm">Review</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Items -->
+        <div class="dash-card">
+          <div class="card-header">
+            <div class="card-title">Action Items</div>
+          </div>
+          <div style="background: var(--danger-light); border-radius: var(--radius-md); padding: 16px; display: flex; gap: 12px; margin-bottom: 12px;">
+            <i data-lucide="alert-triangle" style="color: var(--danger); flex-shrink: 0;"></i>
+            <div>
+              <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-primary);">Low Vitamin D</div>
+              <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 4px;">Schedule a consult with Dr. Sharma for supplements.</div>
+            </div>
+          </div>
+          <div style="background: var(--success-light); border-radius: var(--radius-md); padding: 16px; display: flex; gap: 12px;">
+            <i data-lucide="pill" style="color: var(--success); flex-shrink: 0;"></i>
+            <div>
+              <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-primary);">Refill Metformin</div>
+              <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 4px;">You have 5 days of medication left.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div> <!-- /Overview Tab -->
+
+    <!-- REPORTS TAB -->
+    <div id="tab-reports" class="dash-tab">
+      <h2 style="font-size: 1.8rem; color: var(--primary); margin-bottom: 8px;">My Reports</h2>
+      <p style="color: var(--text-secondary); margin-bottom: 24px;">View and manage your medical documents and lab results.</p>
+      
+      <div class="dash-card">
+        <div class="card-header">
+          <div class="card-title">All Documents</div>
+          <button class="btn btn-primary btn-sm"><i data-lucide="plus" style="width: 14px; height: 14px;"></i> Upload</button>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <div style="padding: 16px; border: 1px solid var(--surface-dim); border-radius: 8px; display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: 16px;">
+              <i data-lucide="file-text" style="color: var(--accent); width: 24px; height: 24px;"></i>
+              <div>
+                <div style="font-weight: 600;">MRI Scan Result - Lower Back</div>
+                <div style="font-size: 0.8rem; color: var(--text-muted);">Added on Nov 02, 2025 • 2.4 MB</div>
+              </div>
+            </div>
+            <button class="btn btn-outline btn-sm">Download</button>
+          </div>
+          <div style="padding: 16px; border: 1px solid var(--surface-dim); border-radius: 8px; display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: 16px;">
+              <i data-lucide="file-text" style="color: var(--accent); width: 24px; height: 24px;"></i>
+              <div>
+                <div style="font-weight: 600;">Complete Blood Count (CBC)</div>
+                <div style="font-size: 0.8rem; color: var(--text-muted);">Added on Oct 24, 2025 • 1.1 MB</div>
+              </div>
+            </div>
+            <button class="btn btn-outline btn-sm">Download</button>
+          </div>
+        </div>
+      </div>
+    </div> <!-- /Reports Tab -->
+
+    <!-- VITALS TAB -->
+    <div id="tab-vitals" class="dash-tab">
+      <h2 style="font-size: 1.8rem; color: var(--primary); margin-bottom: 8px;">Vitals History</h2>
+      <p style="color: var(--text-secondary); margin-bottom: 24px;">Track your health metrics over time.</p>
+      <div class="dash-card" style="text-align: center; padding: 40px;">
+        <i data-lucide="bar-chart-2" style="width: 48px; height: 48px; color: var(--text-muted); margin-bottom: 16px;"></i>
+        <h3>Interactive Charts Coming Soon</h3>
+        <p style="color: var(--text-secondary);">We're gathering enough data points to build your historical trends.</p>
+      </div>
+    </div> <!-- /Vitals Tab -->
+
+    <!-- MEDS TAB -->
+    <div id="tab-meds" class="dash-tab">
+      <h2 style="font-size: 1.8rem; color: var(--primary); margin-bottom: 8px;">Medications</h2>
+      <p style="color: var(--text-secondary); margin-bottom: 24px;">Manage your active prescriptions.</p>
+      <div class="dash-card">
+        <div style="display: flex; align-items: center; justify-content: space-between; padding-bottom: 16px; border-bottom: 1px solid var(--surface-dim);">
+          <div style="display: flex; align-items: center; gap: 16px;">
+            <div style="width: 48px; height: 48px; border-radius: 12px; background: var(--primary-light); color: white; display: flex; align-items: center; justify-content: center;"><i data-lucide="pill"></i></div>
+            <div>
+              <div style="font-weight: 700; font-size: 1.1rem;">Metformin 500mg</div>
+              <div style="font-size: 0.85rem; color: var(--text-muted);">Take 1 pill after dinner</div>
+            </div>
+          </div>
+          <div style="text-align: right;">
+            <div style="font-weight: 600; color: var(--warning);">5 days left</div>
+            <a href="#" style="font-size: 0.8rem; color: var(--accent);">Request Refill</a>
+          </div>
+        </div>
+      </div>
+    </div> <!-- /Meds Tab -->
+
+    <!-- APPOINTMENTS TAB -->
+    <div id="tab-appointments" class="dash-tab">
+      <div style="margin-bottom: 24px;">
+        <h2 style="font-size: 1.8rem; color: var(--primary); margin-bottom: 8px;">Appointments</h2>
+        <p style="color: var(--text-secondary);">Manage your upcoming visits and book new consultations in Bengaluru.</p>
+      </div>
+      
+      <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 24px;">
+        
+        <!-- Upcoming Appointments List -->
+        <div class="dash-card" style="align-self: start;">
+          <h3 style="font-size: 1.2rem; margin-bottom: 16px; color: var(--text-primary);">Upcoming Appointments</h3>
+          <div id="appointments-list" style="display: flex; flex-direction: column; gap: 12px;">
+            <p id="no-appointments-msg" style="color: var(--text-muted); text-align: center; padding: 20px;">No upcoming appointments.</p>
+            <!-- Dynamic appointments will be appended here -->
+          </div>
+        </div>
+
+        <!-- Book Appointment Form -->
+        <div class="dash-card" style="align-self: start; background: var(--surface); border: 1px solid var(--accent-light);">
+          <h3 style="font-size: 1.2rem; margin-bottom: 16px; color: var(--text-primary); display: flex; align-items: center; gap: 8px;">
+            <i data-lucide="calendar-plus" style="color: var(--accent);"></i> Book a Visit
+          </h3>
+          <form id="appointment-form" onsubmit="event.preventDefault(); submitAppointment();">
+            <div style="margin-bottom: 12px;">
+              <label style="display: block; font-size: 0.85rem; margin-bottom: 6px; font-weight: 500;">Hospital (Bengaluru)</label>
+              <select id="appt-hospital" class="form-select" style="width: 100%; padding: 10px; border: 1px solid var(--surface-dim); border-radius: 8px;" required>
+                <option value="">-- Choose Hospital --</option>
+                <option value="Apollo Hospitals, Bannerghatta">Apollo Hospitals, Bannerghatta</option>
+                <option value="Manipal Hospital, Old Airport">Manipal Hospital, Old Airport</option>
+                <option value="Fortis Hospital, Cunningham">Fortis Hospital, Cunningham</option>
+                <option value="Narayana Health City, Bommasandra">Narayana Health City, Bommasandra</option>
+                <option value="Aster CMI Hospital, Hebbal">Aster CMI Hospital, Hebbal</option>
+                <option value="Sakra World Hospital, Bellandur">Sakra World Hospital, Bellandur</option>
+              </select>
+            </div>
+            <div style="margin-bottom: 12px;">
+              <label style="display: block; font-size: 0.85rem; margin-bottom: 6px; font-weight: 500;">Specialty</label>
+              <select id="appt-dept" class="form-select" style="width: 100%; padding: 10px; border: 1px solid var(--surface-dim); border-radius: 8px;" required>
+                <option value="">-- Choose Specialty --</option>
+                <option value="General Medicine">General Medicine</option>
+                <option value="Cardiology">Cardiology</option>
+                <option value="Orthopedics">Orthopedics</option>
+                <option value="Pediatrics">Pediatrics</option>
+                <option value="Dermatology">Dermatology</option>
+                <option value="Neurology">Neurology</option>
+              </select>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+              <div>
+                <label style="display: block; font-size: 0.85rem; margin-bottom: 6px; font-weight: 500;">Date</label>
+                <input type="date" id="appt-date" class="form-input" style="width: 100%; padding: 10px; border: 1px solid var(--surface-dim); border-radius: 8px;" required>
+              </div>
+              <div>
+                <label style="display: block; font-size: 0.85rem; margin-bottom: 6px; font-weight: 500;">Time</label>
+                <input type="time" id="appt-time" class="form-input" style="width: 100%; padding: 10px; border: 1px solid var(--surface-dim); border-radius: 8px;" required>
+              </div>
+            </div>
+            <div style="margin-bottom: 16px;">
+              <label style="display: block; font-size: 0.85rem; margin-bottom: 6px; font-weight: 500;">Reason for Visit</label>
+              <textarea id="appt-reason" rows="2" class="form-input" placeholder="Briefly describe your symptoms..." style="width: 100%; padding: 10px; border: 1px solid var(--surface-dim); border-radius: 8px; resize: vertical;" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Confirm Booking</button>
+          </form>
+        </div>
+      </div>
+    </div> <!-- /Appointments Tab -->
+
+    <!-- EXPERT AI CHAT TAB -->
+    <div id="tab-expert-ai" class="dash-tab">
+      <div style="display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 24px;">
+        <div>
+          <h2 style="font-size: 1.8rem; color: var(--primary); margin-bottom: 8px;">Expert AI Consultation</h2>
+          <p style="color: var(--text-secondary);">Powered by Gemini 1.5 Flash. Fast, accurate medical insights.</p>
+        </div>
+        <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 8px;">
+          <input type="password" id="geminiApiKey" placeholder="Enter Gemini API Key..." style="padding: 10px 16px; border: 1px solid var(--surface-dim); border-radius: var(--radius-full); font-size: 0.85rem; width: 280px; outline: none;">
+          <span style="font-size: 0.75rem; color: var(--text-muted);">Required for real-time AI responses.</span>
+        </div>
+      </div>
+      
+      <div class="dash-card" style="display: flex; flex-direction: column; padding: 0; overflow: hidden; height: 60vh; box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
+        <div class="chat-container" style="border-radius: 0; height: 100%; display: flex; flex-direction: column;">
+          <div class="chat-window" id="full-chat-window" style="flex: 1; padding: 24px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; background: #fafafa;">
+            <div class="chat-msg msg-ai" style="max-width: 70%; border-bottom-left-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+              Hello! I am your Expert AI powered by Gemini Flash. I have access to your health profile. How can I assist you today?
+            </div>
+          </div>
+          <div class="chat-input-area" style="padding: 16px 24px; background: white; border-top: 1px solid var(--surface-dim); display: flex; gap: 12px; align-items: center;">
+            <input type="text" id="fullChatInput" class="chat-input" placeholder="Describe your symptoms, ask about your reports..." style="padding: 14px 20px; font-size: 1rem; border-color: var(--surface-dim); border-radius: 30px; flex: 1;" />
+            <button id="btnSendFullChat" class="btn-send" style="width: 50px; height: 50px;"><i data-lucide="send" style="width: 22px; height: 22px;"></i></button>
+          </div>
+        </div>
+      </div>
+    </div> <!-- /Expert AI Chat Tab -->
+
+    <!-- INSURANCE TAB -->
+    <section id="tab-insurance" class="dash-tab">
+      <div style="margin-bottom: 24px;">
+        <h2 style="font-size: 1.8rem; color: var(--primary); margin-bottom: 8px;">Health Insurance Coverage</h2>
+        <p style="color: var(--text-secondary);">Guided Navigation for your health insurance options.</p>
+      </div>
+
+      <div class="dash-card" style="padding: 0; overflow: hidden; display: flex; flex-direction: column;">
+        <div class="insurance-tabs" style="display: flex; gap: 0; border-bottom: 1px solid var(--surface-dim); background: #fafafa; overflow-x: auto;">
+          <button class="ins-tab-btn active" onclick="handleTabSwitch('gov-plan')" style="flex: 1; min-width: 150px; padding: 16px; border:none; background:none; font-weight:600; color:var(--primary); border-bottom: 2px solid var(--accent); cursor: pointer; transition: all 0.3s;">Government Plan</button>
+          <button class="ins-tab-btn" onclick="handleTabSwitch('private-a')" style="flex: 1; min-width: 150px; padding: 16px; border:none; background:none; font-weight:600; color:var(--text-muted); border-bottom: 2px solid transparent; cursor: pointer; transition: all 0.3s;">Private Plan A</button>
+          <button class="ins-tab-btn" onclick="handleTabSwitch('catastrophic')" style="flex: 1; min-width: 150px; padding: 16px; border:none; background:none; font-weight:600; color:var(--text-muted); border-bottom: 2px solid transparent; cursor: pointer; transition: all 0.3s;">Catastrophic</button>
+          <button class="ins-tab-btn" onclick="handleTabSwitch('family-plan')" style="flex: 1; min-width: 150px; padding: 16px; border:none; background:none; font-weight:600; color:var(--text-muted); border-bottom: 2px solid transparent; cursor: pointer; transition: all 0.3s;">Family Floater</button>
+          <button class="ins-tab-btn" onclick="handleTabSwitch('corporate-plan')" style="flex: 1; min-width: 150px; padding: 16px; border:none; background:none; font-weight:600; color:var(--text-muted); border-bottom: 2px solid transparent; cursor: pointer; transition: all 0.3s;">Corporate Group</button>
+        </div>
+
+        <div style="padding: 24px; min-height: 350px;">
+          <!-- Government Plan Content -->
+          <div id="gov-plan" class="ins-content active" style="animation: fadeIn 0.3s;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px;">
+              <div style="display: flex; align-items: center; gap: 16px;">
+                <div style="width: 50px; height: 50px; border-radius: 12px; background: var(--primary-light); display: flex; align-items: center; justify-content: center; color: white;">
+                  <i data-lucide="landmark"></i>
+                </div>
+                <div>
+                  <h3 style="font-size: 1.2rem; margin: 0; color: var(--text-primary);">National Health Scheme</h3>
+                  <p style="margin: 0; font-size: 0.85rem; color: var(--text-muted);">Standard Government Coverage</p>
+                </div>
+              </div>
+              <button class="btn btn-outline" onclick="window.location.href='https://placeholder-link.com';">Apply Now / Check Coverage</button>
+            </div>
+            
+            <div style="background: var(--surface); padding: 20px; border-radius: 12px; border: 1px solid var(--surface-dim);">
+              <h4 style="margin-bottom: 16px; font-size: 1rem; color: var(--text-secondary);">Eligibility Checker</h4>
+              <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                <div>
+                  <label style="display: block; font-size: 0.85rem; margin-bottom: 8px; font-weight: 500;">Age</label>
+                  <input type="number" id="gov-age" class="form-input" placeholder="e.g., 30" style="width: 100%; padding: 10px; border: 1px solid var(--surface-dim); border-radius: 8px;">
+                </div>
+                <div>
+                  <label style="display: block; font-size: 0.85rem; margin-bottom: 8px; font-weight: 500;">Annual Income</label>
+                  <select id="gov-income" class="form-select" style="width: 100%; padding: 10px; border: 1px solid var(--surface-dim); border-radius: 8px; background: white;">
+                    <option value="Low">Below $10k</option>
+                    <option value="Mid">$10k - $30k</option>
+                    <option value="High">Above $30k</option>
+                  </select>
+                </div>
+                <div>
+                  <label style="display: block; font-size: 0.85rem; margin-bottom: 8px; font-weight: 500;">Diagnosed Status</label>
+                  <select id="gov-status" class="form-select" style="width: 100%; padding: 10px; border: 1px solid var(--surface-dim); border-radius: 8px; background: white;">
+                    <option value="Healthy">Healthy / No Major Conditions</option>
+                    <option value="Mild">Mild / Chronic Conditions</option>
+                    <option value="Severe">Severe / Critical Conditions</option>
+                  </select>
+                </div>
+              </div>
+              <button class="btn btn-primary" onclick="checkEligibility('gov-plan')" style="width: 100%;">Check Eligibility</button>
+              <div id="gov-feedback" style="margin-top: 16px; padding: 12px; border-radius: 8px; display: none; font-weight: 500; font-size: 0.9rem;"></div>
+            </div>
+          </div>
+
+          <!-- Private Plan A Content -->
+          <div id="private-a" class="ins-content" style="display: none; animation: fadeIn 0.3s;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px;">
+              <div style="display: flex; align-items: center; gap: 16px;">
+                <div style="width: 50px; height: 50px; border-radius: 12px; background: var(--accent); display: flex; align-items: center; justify-content: center; color: white;">
+                  <i data-lucide="shield"></i>
+                </div>
+                <div>
+                  <h3 style="font-size: 1.2rem; margin: 0; color: var(--text-primary);">Premium Care Plan</h3>
+                  <p style="margin: 0; font-size: 0.85rem; color: var(--text-muted);">Private Insurer A</p>
+                </div>
+              </div>
+              <button class="btn btn-outline" onclick="window.location.href='https://placeholder-link.com';">Apply Now / Check Coverage</button>
+            </div>
+
+            <div style="background: var(--surface); padding: 20px; border-radius: 12px; border: 1px solid var(--surface-dim);">
+              <h4 style="margin-bottom: 16px; font-size: 1rem; color: var(--text-secondary);">Eligibility Checker</h4>
+              <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                <div>
+                  <label style="display: block; font-size: 0.85rem; margin-bottom: 8px; font-weight: 500;">Age</label>
+                  <input type="number" id="priv-age" class="form-input" placeholder="e.g., 30" style="width: 100%; padding: 10px; border: 1px solid var(--surface-dim); border-radius: 8px;">
+                </div>
+                <div>
+                  <label style="display: block; font-size: 0.85rem; margin-bottom: 8px; font-weight: 500;">Income Bracket</label>
+                  <select id="priv-income" class="form-select" style="width: 100%; padding: 10px; border: 1px solid var(--surface-dim); border-radius: 8px; background: white;">
+                    <option value="Low">Below $30k</option>
+                    <option value="Mid">$30k - $80k</option>
+                    <option value="High">Above $80k</option>
+                  </select>
+                </div>
+                <div>
+                  <label style="display: block; font-size: 0.85rem; margin-bottom: 8px; font-weight: 500;">Pre-existing</label>
+                  <select id="priv-status" class="form-select" style="width: 100%; padding: 10px; border: 1px solid var(--surface-dim); border-radius: 8px; background: white;">
+                    <option value="No">None</option>
+                    <option value="Yes">Yes</option>
+                  </select>
+                </div>
+                <div>
+                  <label style="display: block; font-size: 0.85rem; margin-bottom: 8px; font-weight: 500;">Tobacco User</label>
+                  <select id="priv-tobacco" class="form-select" style="width: 100%; padding: 10px; border: 1px solid var(--surface-dim); border-radius: 8px; background: white;">
+                    <option value="No">No</option>
+                    <option value="Yes">Yes</option>
+                  </select>
+                </div>
+              </div>
+              <button class="btn btn-primary" onclick="checkEligibility('private-a')" style="width: 100%;">Check Eligibility</button>
+              <div id="priv-feedback" style="margin-top: 16px; padding: 12px; border-radius: 8px; display: none; font-weight: 500; font-size: 0.9rem;"></div>
+            </div>
+          </div>
+
+          <!-- Catastrophic Coverage Content -->
+          <div id="catastrophic" class="ins-content" style="display: none; animation: fadeIn 0.3s;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px;">
+              <div style="display: flex; align-items: center; gap: 16px;">
+                <div style="width: 50px; height: 50px; border-radius: 12px; background: var(--danger); display: flex; align-items: center; justify-content: center; color: white;">
+                  <i data-lucide="alert-triangle"></i>
+                </div>
+                <div>
+                  <h3 style="font-size: 1.2rem; margin: 0; color: var(--text-primary);">Safety Net Shield</h3>
+                  <p style="margin: 0; font-size: 0.85rem; color: var(--text-muted);">High-Deductible Emergency Plan</p>
+                </div>
+              </div>
+              <button class="btn btn-outline" onclick="window.location.href='https://placeholder-link.com';">Apply Now / Check Coverage</button>
+            </div>
+
+            <div style="background: var(--surface); padding: 20px; border-radius: 12px; border: 1px solid var(--surface-dim);">
+              <h4 style="margin-bottom: 16px; font-size: 1rem; color: var(--text-secondary);">Eligibility Checker</h4>
+              <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                <div>
+                  <label style="display: block; font-size: 0.85rem; margin-bottom: 8px; font-weight: 500;">Age</label>
+                  <input type="number" id="cat-age" class="form-input" placeholder="e.g., 25" style="width: 100%; padding: 10px; border: 1px solid var(--surface-dim); border-radius: 8px;">
+                </div>
+                <div>
+                  <label style="display: block; font-size: 0.85rem; margin-bottom: 8px; font-weight: 500;">Diagnosed Status</label>
+                  <select id="cat-status" class="form-select" style="width: 100%; padding: 10px; border: 1px solid var(--surface-dim); border-radius: 8px; background: white;">
+                    <option value="Healthy">Healthy / Occasional Visits</option>
+                    <option value="Severe">Severe / Frequent Hospitalization</option>
+                  </select>
+                </div>
+                <div>
+                  <label style="display: block; font-size: 0.85rem; margin-bottom: 8px; font-weight: 500;">Recent Hospitalization</label>
+                  <select id="cat-hosp" class="form-select" style="width: 100%; padding: 10px; border: 1px solid var(--surface-dim); border-radius: 8px; background: white;">
+                    <option value="No">No</option>
+                    <option value="Yes">Yes (Last 6 Months)</option>
+                  </select>
+                </div>
+              </div>
+              <button class="btn btn-primary" onclick="checkEligibility('catastrophic')" style="width: 100%;">Check Eligibility</button>
+              <div id="cat-feedback" style="margin-top: 16px; padding: 12px; border-radius: 8px; display: none; font-weight: 500; font-size: 0.9rem;"></div>
+            </div>
+          </div>
+          
+          <!-- Family Floater Plan Content -->
+          <div id="family-plan" class="ins-content" style="display: none; animation: fadeIn 0.3s;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px;">
+              <div style="display: flex; align-items: center; gap: 16px;">
+                <div style="width: 50px; height: 50px; border-radius: 12px; background: #3b82f6; display: flex; align-items: center; justify-content: center; color: white;">
+                  <i data-lucide="users"></i>
+                </div>
+                <div>
+                  <h3 style="font-size: 1.2rem; margin: 0; color: var(--text-primary);">Family Floater Plan</h3>
+                  <p style="margin: 0; font-size: 0.85rem; color: var(--text-muted);">Comprehensive coverage for the whole family</p>
+                </div>
+              </div>
+              <button class="btn btn-outline" onclick="window.location.href='https://placeholder-link.com';">Apply Now / Check Coverage</button>
+            </div>
+
+            <div style="background: var(--surface); padding: 20px; border-radius: 12px; border: 1px solid var(--surface-dim);">
+              <h4 style="margin-bottom: 16px; font-size: 1rem; color: var(--text-secondary);">Eligibility Checker</h4>
+              <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                <div>
+                  <label style="display: block; font-size: 0.85rem; margin-bottom: 8px; font-weight: 500;">Eldest Member Age</label>
+                  <input type="number" id="fam-age" class="form-input" placeholder="e.g., 45" style="width: 100%; padding: 10px; border: 1px solid var(--surface-dim); border-radius: 8px;">
+                </div>
+                <div>
+                  <label style="display: block; font-size: 0.85rem; margin-bottom: 8px; font-weight: 500;">No. of Dependents</label>
+                  <input type="number" id="fam-dep" class="form-input" placeholder="e.g., 3" style="width: 100%; padding: 10px; border: 1px solid var(--surface-dim); border-radius: 8px;">
+                </div>
+                <div>
+                  <label style="display: block; font-size: 0.85rem; margin-bottom: 8px; font-weight: 500;">Family Pre-existing Conditions</label>
+                  <select id="fam-status" class="form-select" style="width: 100%; padding: 10px; border: 1px solid var(--surface-dim); border-radius: 8px; background: white;">
+                    <option value="None">None</option>
+                    <option value="Mild">Mild</option>
+                    <option value="Severe">Severe</option>
+                  </select>
+                </div>
+              </div>
+              <button class="btn btn-primary" onclick="checkEligibility('family-plan')" style="width: 100%;">Check Eligibility</button>
+              <div id="fam-feedback" style="margin-top: 16px; padding: 12px; border-radius: 8px; display: none; font-weight: 500; font-size: 0.9rem;"></div>
+            </div>
+          </div>
+
+          <!-- Corporate Group Health Plan Content -->
+          <div id="corporate-plan" class="ins-content" style="display: none; animation: fadeIn 0.3s;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px;">
+              <div style="display: flex; align-items: center; gap: 16px;">
+                <div style="width: 50px; height: 50px; border-radius: 12px; background: #8b5cf6; display: flex; align-items: center; justify-content: center; color: white;">
+                  <i data-lucide="briefcase"></i>
+                </div>
+                <div>
+                  <h3 style="font-size: 1.2rem; margin: 0; color: var(--text-primary);">Corporate Group Plan</h3>
+                  <p style="margin: 0; font-size: 0.85rem; color: var(--text-muted);">Employer-sponsored health benefits</p>
+                </div>
+              </div>
+              <button class="btn btn-outline" onclick="window.location.href='https://placeholder-link.com';">Apply Now / Check Coverage</button>
+            </div>
+
+            <div style="background: var(--surface); padding: 20px; border-radius: 12px; border: 1px solid var(--surface-dim);">
+              <h4 style="margin-bottom: 16px; font-size: 1rem; color: var(--text-secondary);">Eligibility Checker</h4>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                <div>
+                  <label style="display: block; font-size: 0.85rem; margin-bottom: 8px; font-weight: 500;">Employment Status</label>
+                  <select id="corp-emp" class="form-select" style="width: 100%; padding: 10px; border: 1px solid var(--surface-dim); border-radius: 8px; background: white;">
+                    <option value="Full-time">Full-time</option>
+                    <option value="Part-time">Part-time</option>
+                    <option value="Freelance">Freelance / Contractor</option>
+                    <option value="Unemployed">Unemployed</option>
+                  </select>
+                </div>
+                <div>
+                  <label style="display: block; font-size: 0.85rem; margin-bottom: 8px; font-weight: 500;">Company Size</label>
+                  <select id="corp-size" class="form-select" style="width: 100%; padding: 10px; border: 1px solid var(--surface-dim); border-radius: 8px; background: white;">
+                    <option value="Small">1 - 50 Employees</option>
+                    <option value="Medium">51 - 500 Employees</option>
+                    <option value="Large">500+ Employees</option>
+                  </select>
+                </div>
+              </div>
+              <button class="btn btn-primary" onclick="checkEligibility('corporate-plan')" style="width: 100%;">Check Eligibility</button>
+              <div id="corp-feedback" style="margin-top: 16px; padding: 12px; border-radius: 8px; display: none; font-weight: 500; font-size: 0.9rem;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section> <!-- /Insurance Tab -->
+
+  </main>
+</div>
+
+<!-- Modal Overlay for 'You're all set!' -->
+<div id="onboardingModal" class="modal-overlay open" style="display: flex; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); background: rgba(10,22,40,0.65); z-index: 9999;">
+  <div class="modal" style="text-align: center; max-width: 600px; padding: 60px 40px;">
+    
+    <!-- Progress Steps -->
+    <div class="modal-progress" style="margin-bottom: 48px; max-width: 480px; margin-left: auto; margin-right: auto;">
+      <div class="progress-steps" style="display: flex; align-items: center; justify-content: space-between;">
+        <div class="prog-step done">
+          <span style="background: var(--accent); color: var(--primary);">1</span>
+          <label style="color: var(--text-muted); font-size: 0.75rem; margin-top: 8px;">Health Info</label>
+        </div>
+        <div class="prog-line done" style="background: var(--accent);"></div>
+        <div class="prog-step done">
+          <span style="background: var(--accent); color: var(--primary);">2</span>
+          <label style="color: var(--text-muted); font-size: 0.75rem; margin-top: 8px;">Connect Sources</label>
+        </div>
+        <div class="prog-line done" style="background: var(--accent);"></div>
+        <div class="prog-step done">
+          <span style="background: var(--accent); color: var(--primary);">3</span>
+          <label style="color: var(--text-muted); font-size: 0.75rem; margin-top: 8px;">Emergency Contact</label>
+        </div>
+        <div class="prog-line done" style="background: var(--accent);"></div>
+        <div class="prog-step active">
+          <span style="background: var(--accent); color: var(--primary);">4</span>
+          <label style="color: var(--accent); font-size: 0.75rem; margin-top: 8px;">Done!</label>
+        </div>
+      </div>
+    </div>
+
+    <h2 style="color: var(--text-primary); font-size: 1.8rem; margin-bottom: 16px; font-weight: 700;">You're all set!</h2>
+    <p style="color: var(--text-secondary); font-size: 1.05rem; margin-bottom: 40px; max-width: 400px; margin-left: auto; margin-right: auto;">
+      Your MediSight Health profile is ready. Start exploring your unified health dashboard.
+    </p>
+
+    <button id="btn-go-dashboard" class="btn btn-primary" style="padding: 16px 48px; font-size: 1.1rem; border-radius: 30px; box-shadow: 0 8px 24px rgba(0,212,204,0.35);">
+      Go to Dashboard
+    </button>
+  </div>
+</div>
+
+<script src="js/script.js"></script>
+<script>lucide.createIcons();</script>
+</body>
+</html>
