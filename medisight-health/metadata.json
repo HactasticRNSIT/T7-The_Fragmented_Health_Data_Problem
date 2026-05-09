@@ -1,6 +1,0 @@
-{
-  "name": "MediSight Health",
-  "description": "A unified patient health dashboard that aggregates lab reports, prescriptions, vitals, and medical history into a single intelligent portal.",
-  "requestFramePermissions": [],
-  "majorCapabilities": []
-}
